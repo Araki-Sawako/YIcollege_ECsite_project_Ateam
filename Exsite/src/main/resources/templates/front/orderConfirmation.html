@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <title>ご注文内容確認 | ECサイト</title>
+  <style>
+    /*―― 共通：リセット＆ベース設定 ――*/
+    * { margin:0; padding:0; box-sizing:border-box; }
+    html, body { height:100%; }
+    body {
+      font-family:'Meiryo','Segoe UI',sans-serif;
+      display:flex; flex-direction:column;
+      min-height:100vh; background:#f5f5f5; color:#333;
+    }
+
+    /*―― 統一ヘッダー ――*/
+    header {
+      background:#cccccc;
+      padding:16px 24px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+    .logo { font-size:1.4em; font-weight:bold; }
+    .logo a { color:#333; text-decoration:none; }
+    nav {
+      display:flex;
+      gap:0;
+    }
+    nav a {
+      display:block;
+      padding:8px 16px;
+      font-size:1em;
+      color:#333;
+      text-decoration:none;
+      white-space:nowrap;
+    }
+    nav a:hover {
+      background:#e0e0e0;
+    }
+
+    /*―― メイン：ご注文内容確認 ――*/
+    main {
+      flex:1; padding:24px; display:flex; justify-content:center;
+    }
+    .container {
+      background:#fff; border:1px solid #ccc; border-radius:8px;
+      padding:24px; max-width:900px; width:100%;
+      box-shadow:0 2px 8px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align:center; margin-bottom:24px;
+      font-size:1.5em; color:#333;
+    }
+    .alert {
+      color:#d8000c; text-align:center; margin-bottom:16px;
+    }
+
+    /*―― セクション共通スタイル ――*/
+    .section {
+      background:#fafafa; border:1px solid #eee;
+      border-radius:6px; padding:16px; margin-bottom:20px;
+    }
+    .section-title {
+      font-size:1.2em; color:#2c3e50; margin-bottom:12px;
+      border-left:4px solid #4a90e2; padding-left:8px;
+    }
+
+    /* info-table */
+    .info-table {
+      width:100%; border-collapse:collapse;
+    }
+    .info-table td {
+      padding:8px 12px; border-bottom:1px solid #eee;
+    }
+
+    /* items-table */
+    .items-table {
+      width:100%; border-collapse:collapse; margin-top:12px;
+    }
+    .items-table th, .items-table td {
+      padding:10px; border-bottom:1px solid #eee;
+      font-size:0.95em; text-align:left;
+    }
+    .items-table th {
+      background:#f0f0f0; font-weight:600;
+    }
+    .tfoot-row td {
+      font-weight:600; background:#fafafa;
+    }
+
+    /* ボタン群 */
+    .btn-group {
+      display:flex; justify-content:center; gap:16px; margin-top:24px;
+    }
+    .btn-group form,
+    .btn-group button {
+      margin:0;
+    }
+    .btn-group button,
+    .btn-group .confirm {
+      padding:12px 24px; font-size:1em;
+      border:none; border-radius:4px; cursor:pointer;
+    }
+    .confirm {
+      background:#27ae60; color:#fff;
+    }
+    .confirm:hover { background:#1e874b; }
+    .modify {
+      background:#fff; color:#333; border:1px solid #333;
+    }
+    .modify:hover { background:#f0f0f0; }
+
+    /*―― 統一フッター ――*/
+    footer.footer {
+      background:#cccccc; text-align:center;
+      padding:12px 0; margin-top:auto;
+      font-size:0.85em; color:#555;
+    }
+    .footer-links {
+      display:flex; justify-content:center; gap:24px;
+    }
+    .footer-links a {
+      text-decoration:none; color:#333;
+    }
+    .footer-links a:hover {
+      text-decoration:underline;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ヘッダー -->
+  <header class="header">
+    <div class="logo">
+      <a th:href="@{/}">Y&I Group</a>
+    </div>
+    <nav class="nav-links">
+      <a th:href="@{/mypage}">マイページ</a>
+      <a th:href="@{/cart}">🛒 </a>
+    </nav>
+  </header>
+
+  <!-- メイン -->
+  <main>
+    <div class="container">
+      <h2>ご注文内容確認</h2>
+
+      <div th:if="${errorMessage}" class="alert" th:text="${errorMessage}">
+        注文を確定できませんでした。
+      </div>
+
+      <!-- お届け先情報 -->
+      <div class="section">
+        <div class="section-title">お届け先情報</div>
+        <table class="info-table">
+          <tr><td>氏名</td><td th:text="${orderInfo.recipient}">山田 太郎</td></tr>
+          <tr><td>郵便番号</td><td th:text="${orderInfo.postalCode}">123-4567</td></tr>
+          <tr><td>住所</td><td th:text="${orderInfo.address}">東京都○○区○○町1-2-3</td></tr>
+          <tr><td>電話番号</td><td th:text="${orderInfo.phone}">09012345678</td></tr>
+        </table>
+      </div>
+
+      <!-- 配送方法 -->
+      <div class="section">
+        <div class="section-title">配送方法</div>
+        <div th:text="${orderInfo.deliveryMethodLabel}">通常配送</div>
+        <div th:if="${orderInfo.deliveryNotes}">
+          <small th:text="${orderInfo.deliveryNotes}">指定日時: ○月○日</small>
+        </div>
+      </div>
+
+      <!-- お支払い方法 -->
+      <div class="section">
+        <div class="section-title">お支払い方法</div>
+        <div th:text="${orderInfo.paymentMethodLabel}">銀行振込</div>
+      </div>
+
+      <!-- 商品情報一覧 -->
+      <div class="section">
+        <div class="section-title">商品情報一覧</div>
+        <table class="items-table">
+          <thead>
+            <tr>
+              <th>画像</th><th>商品名</th><th>価格</th><th>数量</th><th>小計</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:each="item : ${orderItems}">
+              <td>
+                <img th:src="@{${item.product.imageUrl}}"
+                     alt="商品画像"
+                     style="width:60px;height:60px;object-fit:cover;">
+              </td>
+              <td th:text="${item.product.name}">商品A</td>
+              <td>¥<span th:text="${#numbers.formatInteger(item.product.price,'#,###')}">1,000</span></td>
+              <td th:text="${item.quantity}">1</td>
+              <td>¥<span th:text="${#numbers.formatInteger(item.subtotal,'#,###')}">1,000</span></td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr class="tfoot-row">
+              <td colspan="4">合計金額（税込）</td>
+              <td>¥<span th:text="${#numbers.formatInteger(orderInfo.total,'#,###')}">1,950</span></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <!-- ボタン -->
+      <div class="btn-group">
+        <form th:action="@{/checkout/complete}" method="post">
+          <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+          <button type="submit" class="confirm">ご注文を確定</button>
+        </form>
+        <button type="button"
+                class="modify"
+                th:onclick="|location.href='@{/checkout}'|">
+          修正する
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- フッター -->
+  <footer class="footer">
+    <div class="footer-links">
+      <a th:href="@{/terms}">利用規約</a>
+      <a th:href="@{/contact}">お問い合わせ</a>
+    </div>
+  </footer>
+
+</body>
+</html>

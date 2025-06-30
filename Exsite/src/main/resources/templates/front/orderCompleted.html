@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <title>注文完了 | ECサイト</title>
+  <style>
+    /*―― 共通：リセット＆ベース設定 ――*/
+    * { margin:0; padding:0; box-sizing:border-box; }
+    html, body { height:100%; }
+    body {
+      font-family:'Meiryo','Segoe UI',sans-serif;
+      display:flex; flex-direction:column;
+      min-height:100vh; background:#f5f5f5; color:#333;
+    }
+
+    /*―― 統一ヘッダー ――*/
+    header {
+      background:#cccccc;
+      padding:16px 24px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+    .logo { font-size:1.4em; font-weight:bold; }
+    .logo a { color:#333; text-decoration:none; }
+    nav {
+      display:flex;
+      gap:0;
+    }
+    nav a {
+      display:block;
+      padding:8px 16px;
+      font-size:1em;
+      color:#333;
+      text-decoration:none;
+      white-space:nowrap;
+    }
+    nav a:hover {
+      background:#e0e0e0;
+    }
+
+    /*―― メイン：注文完了 ――*/
+    main {
+      flex:1; display:flex; justify-content:center; align-items:flex-start;
+      padding:40px 24px;
+    }
+    .container {
+      background:#fff; border:1px solid #ccc; border-radius:8px;
+      padding:32px; max-width:600px; width:100%;
+      box-shadow:0 2px 8px rgba(0,0,0,0.1);
+      text-align:center;
+    }
+    .container h2 {
+      margin-bottom:24px; font-size:1.4em; color:#333;
+    }
+    .order-no {
+      margin-bottom:24px; font-size:1em; color:#555;
+    }
+    .detail-box {
+      border:1px solid #eee; border-radius:6px;
+      padding:16px; margin-bottom:24px; text-align:left;
+    }
+    .detail-header {
+      margin-bottom:12px; font-size:0.95em; color:#555;
+      border-left:4px solid #4a90e2; padding-left:8px;
+    }
+    .items-table {
+      width:100%; border-collapse:collapse; margin-bottom:12px;
+    }
+    .items-table th, .items-table td {
+      padding:8px; border-bottom:1px solid #eee; font-size:0.9em;
+    }
+    .items-table th {
+      background:#f9f9f9; font-weight:600;
+    }
+    .tfoot-row td {
+      font-weight:600; font-size:1em; background:#fafafa;
+    }
+    .btn-home {
+      display:inline-block; padding:10px 24px; font-size:1em;
+      background:#4a90e2; color:#fff;
+      text-decoration:none; border-radius:4px; cursor:pointer;
+    }
+    .btn-home:hover { background:#357ab8; }
+
+    /*―― 統一フッター ――*/
+    footer.footer {
+      background:#cccccc; text-align:center;
+      padding:12px 0; margin-top:auto; font-size:0.85em; color:#555;
+    }
+    .footer-links {
+      display:flex; justify-content:center; gap:24px;
+    }
+    .footer-links a {
+      text-decoration:none; color:#333;
+    }
+    .footer-links a:hover {
+      text-decoration:underline;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ヘッダー -->
+  <header class="header">
+    <div class="logo">
+      <a th:href="@{/}">Y&I Group</a>
+    </div>
+    <nav class="nav-links">
+      <a th:href="@{/mypage}">マイページ</a>
+      <a th:href="@{/cart}">🛒 </a>
+    </nav>
+  </header>
+
+  <!-- メイン -->
+  <main>
+    <div class="container">
+      <h2>ご注文が完了しました。</h2>
+      <div class="order-no">
+        注文番号：<span th:text="${orderId}">12345</span>
+      </div>
+
+      <div class="detail-box">
+        <div class="detail-header">商品情報一覧</div>
+        <table class="items-table">
+          <thead>
+            <tr>
+              <th>画像</th><th>商品名</th><th>価格</th><th>数量</th><th>小計</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:each="item : ${orderItems}">
+              <td>
+                <img th:src="@{${item.product.imageUrl}}"
+                     alt="商品画像"
+                     style="width:60px;height:60px;object-fit:cover;">
+              </td>
+              <td th:text="${item.product.name}">商品名</td>
+              <td>¥<span th:text="${#numbers.formatInteger(item.product.price,'#,###')}">1,000</span></td>
+              <td th:text="${item.quantity}">1</td>
+              <td>¥<span th:text="${#numbers.formatInteger(item.subtotal,'#,###')}">1,000</span></td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr class="tfoot-row">
+              <td colspan="4" style="text-align:right;">合計金額（税込）</td>
+              <td>¥<span th:text="${#numbers.formatInteger(orderTotal,'#,###')}">1,000</span></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <a th:href="@{/}" class="btn-home">トップへ戻る</a>
+    </div>
+  </main>
+
+  <!-- フッター -->
+  <footer class="footer">
+    <div class="footer-links">
+      <a th:href="@{/terms}">利用規約</a>
+      <a th:href="@{/contact}">お問い合わせ</a>
+    </div>
+  </footer>
+
+</body>
+</html>

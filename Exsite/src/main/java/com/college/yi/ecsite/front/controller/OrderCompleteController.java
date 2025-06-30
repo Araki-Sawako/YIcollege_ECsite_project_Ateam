@@ -9,11 +9,18 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.college.yi.ecsite.entity.Order;
+import com.college.yi.ecsite.front.service.OrderCompleteService;
 
 //注文完了画面
 @Controller
 @RequestMapping("/order/complete")
 public class OrderCompleteController {
+	
+	private final OrderCompleteService orderCompleteService;
+
+    public OrderCompleteController(OrderCompleteService orderCompleteService) {
+        this.orderCompleteService = orderCompleteService;
+    }
 
     @GetMapping
     public String showCompletePage(HttpSession session, Model model) {

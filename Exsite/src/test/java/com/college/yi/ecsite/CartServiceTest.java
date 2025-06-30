@@ -37,7 +37,7 @@ import com.college.yi.ecsite.front.service.CartService;
 	        MockitoAnnotations.openMocks(this);
 	    }
 
-	    @Test //カート一覧が正しく表示されるか
+	    @Test //①カート一覧が正しく表示されるか
 	    public void testGetCartItems_ReturnsCorrectList() {
 	        CartItem item = new CartItem();
 	        item.setProductId(1L);
@@ -56,7 +56,7 @@ import com.college.yi.ecsite.front.service.CartService;
 	        assertEquals("TestProduct", result.get(0).getProduct().getName());
 	    }
 	    
-	    @Test //数量変更が正しく行えるか
+	    @Test //②数量変更が正しく行えるか
 	    public void testUpdateQuantity_UpdatesItemQuantity() {
 	        CartItem item = new CartItem();
 	        item.setQuantity(1);
@@ -69,13 +69,13 @@ import com.college.yi.ecsite.front.service.CartService;
 	        verify(cartItemMapper).update(item);
 	    }
 
-	    @Test //商品削除が実行されるか
+	    @Test //③商品削除が実行されるか
 	    public void testDeleteItem_DeletesCorrectItem() {
 	        cartService.deleteItem(100L, 1L);
 	        verify(cartItemMapper).delete(100L, 1L);
 	    }
 	    
-	    @Test //商品追加が正常にできるか（新規のものに限る）
+	    @Test //④商品追加が正常にできるか（新規のものに限る）
 	    public void testAddToCart_InsertsNewItemWhenNotExists() {
 	        when(cartItemMapper.findByUserIdAndProductId(100L, 1L)).thenReturn(Optional.empty());
 
@@ -84,7 +84,7 @@ import com.college.yi.ecsite.front.service.CartService;
 	        verify(cartItemMapper).insert(any(CartItem.class));
 	    }
 	    
-	    @Test //商品追加が正常にできるか（既存のものに限る）
+	    @Test //⑤商品追加が正常にできるか（既存のものに限る）
 	    public void testAddToCart_UpdatesQuantityWhenItemExists() {
 	        CartItem item = new CartItem();
 	        item.setQuantity(2);
@@ -97,7 +97,7 @@ import com.college.yi.ecsite.front.service.CartService;
 	        verify(cartItemMapper).update(item);
 	    }
 	    
-	    @Test //境界値（quantity=0）
+	    @Test //⑥境界値（quantity=0）
 	    public void testUpdateQuantity_ZeroQuantity() {
 	        CartItem item = new CartItem();
 	        item.setQuantity(1);
@@ -110,7 +110,7 @@ import com.college.yi.ecsite.front.service.CartService;
 	        verify(cartItemMapper).update(item);
 	    }
 	    
-	    @Test //cartが空の場合
+	    @Test //⑦cartが空の場合
 	    public void testGetCartItems_WhenEmptyCart_ReturnsEmptyList() {
 	        when(cartItemMapper.findByUserId(100L)).thenReturn(Collections.emptyList());
 
@@ -119,7 +119,7 @@ import com.college.yi.ecsite.front.service.CartService;
 	        assertTrue(result.isEmpty());
 	    }
 	    
-	    @Test //エラー系
+	    @Test //⑧エラー系
 	    public void testGetCartItems_WhenProductIsNull_ThrowsException() {
 	        CartItem item = new CartItem();
 	        item.setProductId(1L);
@@ -131,14 +131,12 @@ import com.college.yi.ecsite.front.service.CartService;
 	            cartService.getCartItems(100L);
 	        });
 	    }
-
-
-
-
-
-
-
-	
-
+	    
+	    @Test // ⑨境界値（quantityがマイナス）
+	    public void testUpdateQuantity_NegativeQuantity_ThrowsException() {
+	        assertThrows(IllegalArgumentException.class, () -> {
+	            cartService.updateQuantity(100L, 1L, -1);
+	        });
+	    }
 
 }

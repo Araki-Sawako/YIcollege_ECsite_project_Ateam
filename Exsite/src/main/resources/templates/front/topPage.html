@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8"/>
+  <title>ECサイト｜商品一覧</title>
+  <style>
+    /*―― 共通：リセット＆ベース設定 ――*/
+    * { margin:0; padding:0; box-sizing:border-box; }
+    html, body { height:100%; }
+    body {
+      font-family:'Meiryo','Segoe UI',sans-serif;
+      display:flex; flex-direction:column;
+      min-height:100vh; background:#f5f5f5; color:#333;
+    }
+
+    /*―― 統一ヘッダー ――*/
+    header.header {
+      background:#cccccc; padding:16px 24px;
+      display:flex; align-items:center; justify-content:space-between;
+    }
+    .header .logo a {
+      font-size:1.4em; font-weight:bold; color:#333; text-decoration:none;
+    }
+    .header .nav-links {
+      display:flex; align-items:center;
+    }
+    .header .nav-links a {
+      padding:8px 16px; font-size:1em; color:#333;
+      text-decoration:none; white-space:nowrap;
+    }
+    .header .nav-links a:hover {
+      background:#e0e0e0;
+    }
+
+    /*―― 検索／フィルタ ――*/
+    .search-bar {
+      display:flex; gap:8px; width:90%; max-width:800px;
+      margin:24px auto 0;
+    }
+    .search-bar input[type="text"],
+    .search-bar select {
+      flex:1; padding:8px 10px; font-size:1em;
+      border:1px solid #bbb; border-radius:4px;
+    }
+    .search-bar button {
+      padding:8px 16px; font-size:1em;
+      background:#4a90e2; color:#fff;
+      border:none; border-radius:4px; cursor:pointer;
+    }
+    .search-bar button:hover {
+      background:#357ab8;
+    }
+
+    /*―― 件数表示 ――*/
+    .results-info {
+      width:90%; max-width:800px; margin:16px auto;
+      font-size:0.9em; color:#555;
+    }
+
+    /*―― グリッド ――*/
+    .product-grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fill, minmax(160px,1fr));
+      gap:16px; width:90%; max-width:1000px;
+      margin:8px auto 0;
+    }
+    .product-card {
+      background:#fff; border:1px solid #ccc; border-radius:8px;
+      overflow:hidden; display:flex; flex-direction:column;
+      box-shadow:0 2px 6px rgba(0,0,0,0.1);
+    }
+    .product-card img {
+      width:100%; height:160px; object-fit:cover;
+    }
+    .product-info {
+      padding:8px; flex:1;
+      display:flex; flex-direction:column; justify-content:space-between;
+    }
+    .product-info .name {
+      font-size:0.95em; color:#333; margin-bottom:4px;
+      text-decoration:none;
+    }
+    .product-info .price {
+      font-size:1em; font-weight:bold; color:#2c3e50;
+    }
+
+    /*―― ページネーション ――*/
+    .pagination {
+      display:flex; justify-content:center; gap:8px;
+      margin:24px 0;
+    }
+    .pagination a {
+      padding:6px 12px; font-size:0.9em; color:#333;
+      border:1px solid #ccc; border-radius:4px;
+      text-decoration:none;
+    }
+    .pagination a.current {
+      background:#ecf0f1; pointer-events:none;
+    }
+    .pagination a.disabled {
+      color:#aaa; border-color:#eee; pointer-events:none;
+    }
+    .pagination a:hover {
+      background:#f0f0f0;
+    }
+
+    /*―― 統一フッター ――*/
+    footer.footer {
+      background:#cccccc; text-align:center;
+      padding:12px 0; margin-top:auto; font-size:0.85em; color:#555;
+    }
+    .footer-links {
+      display:flex; justify-content:center; gap:24px;
+    }
+    .footer-links a {
+      text-decoration:none; color:#333;
+    }
+    .footer-links a:hover {
+      text-decoration:underline;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ヘッダー -->
+  <header class="header">
+    <div class="logo"><a th:href="@{/}">Y&I Group</a></div>
+    <nav class="nav-links">
+      <sec:authorize access="!isAuthenticated()">
+        <a th:href="@{/login}">ログイン</a>
+        <a th:href="@{/register}">会員登録</a>
+        <a th:href="@{/cart}">🛒</a>
+      </sec:authorize>
+      <sec:authorize access="isAuthenticated()">
+        <a th:href="@{/mypage}">マイページ</a>
+        <a th:href="@{/logout}">ログアウト</a>
+        <a th:href="@{/cart}">🛒</a>
+      </sec:authorize>
+    </nav>
+  </header>
+
+  <!-- 検索／カテゴリ絞り込み -->
+  <form th:action="@{/}" method="get" class="search-bar">
+    <input type="text" name="keyword" th:value="${keyword}" maxlength="50" placeholder="キーワードで検索"/>
+    <select name="category">
+      <option value="">すべてのカテゴリ</option>
+      <option th:each="cat : ${categories}"
+              th:value="${cat.id}"
+              th:text="${cat.name}"
+              th:selected="${cat.id == category}">
+      </option>
+    </select>
+    <button type="submit">検索</button>
+  </form>
+
+  <!-- 全件数・表示範囲 -->
+  <div class="results-info" th:if="${productPage.totalElements > 0}">
+    全<span th:text="${productPage.totalElements}">0</span>件中
+    <span th:text="${productPage.number * productPage.size + 1}">1</span>〜
+    <span th:text="${productPage.number * productPage.size + productPage.numberOfElements}">0</span>件を表示
+  </div>
+  <div class="results-info" th:if="${productPage.totalElements == 0}">
+    該当する商品は見つかりませんでした。
+  </div>
+
+  <!-- 商品一覧グリッド -->
+  <div class="product-grid">
+    <div th:each="prod : ${productPage.content}" class="product-card">
+      <a th:href="@{|/products/${prod.id}|}">
+        <img th:src="@{${prod.imageUrl}}" alt="商品画像"/>
+      </a>
+      <div class="product-info">
+        <a th:href="@{|/products/${prod.id}|}" class="name" th:text="${prod.name}">商品名</a>
+        <div class="price">¥<span th:text="${#numbers.formatInteger(prod.price,'#,###')}">0</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ページネーション -->
+  <div class="pagination" th:if="${productPage.totalPages > 1}">
+    <a th:href="@{|/?page=${productPage.number-1}&keyword=${keyword}&category=${category}|}"
+       th:classappend="${!productPage.hasPrevious()} ? ' disabled' : ''">&lt;</a>
+    <a th:each="i : ${#numbers.sequence(1, productPage.totalPages)}"
+       th:href="@{|/?page=${i-1}&keyword=${keyword}&category=${category}|}"
+       th:text="${i}"
+       th:classappend="${i-1 == productPage.number} ? ' current' : ''">
+    </a>
+    <a th:href="@{|/?page=${productPage.number+1}&keyword=${keyword}&category=${category}|}"
+       th:classappend="${!productPage.hasNext()} ? ' disabled' : ''">&gt;</a>
+  </div>
+
+  <!-- フッター -->
+  <footer class="footer">
+    <div class="footer-links">
+      <a th:href="@{/terms}">利用規約</a>
+      <a th:href="@{/contact}">お問い合わせ</a>
+    </div>
+  </footer>
+
+</body>
+</html>

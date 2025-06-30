@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <title>ログアウト確認 | ECサイト</title>
+  <style>
+    /*―― 共通：リセット＆ベース設定 ――*/
+    * { margin:0; padding:0; box-sizing:border-box; }
+    html, body { height:100%; }
+    body {
+      font-family:"Meiryo","Segoe UI",sans-serif;
+      display:flex; flex-direction:column;
+      min-height:100vh; background:#f5f5f5; color:#333;
+    }
+
+    /*―― 統一ヘッダー ――*/
+    .header {
+      background:#cccccc; padding:16px 24px;
+      display:flex; justify-content:space-between; align-items:center;
+    }
+    .header .logo { font-size:1.4em; font-weight:bold; }
+    .header .nav-links { display:flex; gap:16px; }
+    .header .nav-links a {
+      padding:8px 16px; font-size:1em; color:#333;
+      text-decoration:none; border-radius:4px;
+    }
+    .header .nav-links a:hover { background:#e0e0e0; }
+
+    /*―― モーダル用レイアウト ――*/
+    main { flex:1; position:relative; }
+    .overlay {
+      position:fixed; top:64px; left:0; right:0; bottom:48px;
+      background:rgba(0,0,0,0.2); z-index:10;
+    }
+    .modal {
+      position:fixed; top:50%; left:50%;
+      transform:translate(-50%,-50%);
+      background:#fff; width:360px; border-radius:8px;
+      box-shadow:0 4px 12px rgba(0,0,0,0.15); z-index:20;
+    }
+
+    .modal-body {
+      padding:24px; text-align:center;
+    }
+    .modal-body h2 {
+      margin:0 0 16px;
+      font-size:1.4em; color:#333;
+    }
+    .modal-body p {
+      margin-bottom:24px; font-size:1em; color:#444;
+    }
+
+    /*―― ボタンサイズ統一 ――*/
+    .modal-footer {
+      display:flex; gap:16px; padding:0 24px 24px;
+      justify-content:space-between;
+    }
+    .modal-footer a,
+    .modal-footer form button {
+      flex:1; width:140px; height:40px;
+      font-size:1em; border:2px solid #666;
+      border-radius:4px; background:#fff; color:#333;
+      text-decoration:none; display:flex;
+      align-items:center; justify-content:center;
+      cursor:pointer;
+    }
+    .modal-footer a:hover,
+    .modal-footer form button:hover {
+      background:#f0f0f0; border-color:#444;
+    }
+
+    /*―― 統一フッター ――*/
+    .footer {
+      background:#cccccc; text-align:center;
+      padding:12px 0; font-size:0.85em; color:#555;
+    }
+    .footer-links {
+      display:flex; justify-content:center; gap:24px;
+    }
+    .footer-links a {
+      text-decoration:none; color:#333;
+    }
+    .footer-links a:hover { text-decoration:underline; }
+  </style>
+</head>
+<body>
+
+  <!-- ヘッダー -->
+  <header class="header">
+    <div class="logo">Y&I Group</div>
+    <nav class="nav-links">
+      <a th:href="@{/products}">商品一覧</a>
+      <a th:href="@{/logout-confirm}">ログアウト</a>
+      <a th:href="@{/cart}">🛒 カート</a>
+    </nav>
+  </header>
+
+  <!-- オーバーレイ＆モーダル -->
+  <main>
+    <div class="overlay"></div>
+    <div class="modal">
+      <div class="modal-body">
+        <h2>ログアウト</h2>
+        <p>セッションを終了しますか？</p>
+      </div>
+      <div class="modal-footer">
+        <a th:href="@{/products}">キャンセル</a>
+        <form th:action="@{/logout}" method="post">
+          <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+          <button type="submit">ログアウト</button>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <!-- フッター -->
+  <footer class="footer">
+    <div class="footer-links">
+      <a th:href="@{/terms}">利用規約</a>
+      <a th:href="@{/contact}">お問い合わせ</a>
+    </div>
+  </footer>
+
+</body>
+</html>

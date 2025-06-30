@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <title>マイページ | ECサイト</title>
+  <style>
+    /*―― 共通：リセット＆ベース設定 ――*/
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      font-family: "Meiryo","Segoe UI",sans-serif;
+      display: flex; flex-direction: column;
+      min-height: 100vh;
+      background-color: #f5f5f5;
+      color: #333;
+    }
+
+    /*―― 統一ヘッダー ――*/
+    .header {
+      background: #cccccc;
+      padding: 16px 24px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .header .logo {
+      font-size: 1.4em; font-weight: bold;
+    }
+    .header .nav-links {
+      display: flex; gap: 0;
+    }
+    .header .nav-links a {
+      display: block; padding: 8px 16px;
+      font-size: 1em; color: #333; text-decoration: none;
+      white-space: nowrap;
+    }
+    .header .nav-links a:hover {
+      background: #e0e0e0;
+    }
+
+    /*―― メイン領域 ――*/
+    main {
+      flex: 1; display: flex;
+      justify-content: center; align-items: center;
+      padding: 40px 24px;
+    }
+    .mypage-box {
+      background: #fff; border: 1px solid #999;
+      border-radius: 8px; padding: 40px 32px;
+      width: 360px; text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .mypage-box h2 {
+      margin-bottom: 24px; font-size: 1.4em; color: #333;
+    }
+    .user-name {
+      margin-bottom: 32px; font-size: 1.1em; color: #444;
+    }
+    .btn {
+      display: block; width: 100%; padding: 10px 0;
+      margin-bottom: 16px;
+      background: #4a90e2; color: #fff;
+      border: none; border-radius: 4px;
+      font-size: 1em; text-decoration: none; cursor: pointer;
+    }
+    .btn:hover {
+      background: #357ab8;
+    }
+
+    /*―― 統一フッター ――*/
+    .footer {
+      background: #cccccc; text-align: center;
+      padding: 12px 0; font-size: 0.85em; color: #555;
+    }
+    .footer .footer-links {
+      display: flex; justify-content: center; gap: 24px;
+    }
+    .footer .footer-links a {
+      text-decoration: none; color: #333;
+    }
+    .footer .footer-links a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ヘッダー -->
+  <header class="header">
+    <div class="logo">Y&I Group</div>
+    <nav class="nav-links">
+      <a th:href="@{/products}">商品一覧</a>
+      <a th:href="@{/logout-confirm}">ログアウト</a>
+      <a th:href="@{/cart}">🛒 </a>
+    </nav>
+  </header>
+
+  <!-- メイン -->
+  <main>
+    <div class="mypage-box">
+      <h2>マイページ</h2>
+      <div class="user-name">
+        ユーザー名：<span th:text="${#httpServletRequest.remoteUser}">山田 太郎</span>
+      </div>
+      <a th:href="@{/user/edit}" class="btn">ユーザー情報</a>
+      <a th:href="@{/orders/history}" class="btn">購入履歴確認</a>
+    </div>
+  </main>
+
+  <!-- フッター -->
+  <footer class="footer">
+    <div class="footer-links">
+      <a th:href="@{/terms}">利用規約</a>
+      <a th:href="@{/contact}">お問い合わせ</a>
+    </div>
+  </footer>
+
+</body>
+</html>

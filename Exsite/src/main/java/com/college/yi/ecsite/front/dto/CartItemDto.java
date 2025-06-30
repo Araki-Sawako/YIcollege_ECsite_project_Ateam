@@ -24,4 +24,9 @@ public class CartItemDto {
         this.subtotal = unitPrice.multiply(BigDecimal.valueOf(quantity)).intValue();
 
 	}
+
+	public Product getProduct() {
+		// TODO 自動生成されたメソッド・スタブ
+		return null;
+	}
 }

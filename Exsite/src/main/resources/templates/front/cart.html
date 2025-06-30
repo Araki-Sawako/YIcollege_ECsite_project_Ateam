@@ -5,180 +5,210 @@
   <meta charset="UTF-8"/>
   <title>カート | ECサイト</title>
   <style>
-    /* ベースリセット */
+    /*―― リセット＆ベース ――*/
     * { margin:0; padding:0; box-sizing:border-box; }
+    html, body { height:100%; }
     body {
       font-family:'Meiryo','Segoe UI',sans-serif;
-      background:#f5f5f5; color:#333;
       display:flex; flex-direction:column; min-height:100vh;
+      background:#f5f5f5; color:#333;
     }
-    /* ヘッダー */
-    header {
-      background:#ddd; padding:12px 24px;
+    /*―― 統一ヘッダー ――*/
+    header.header {
+      background:#cccccc; padding:16px 24px;
       display:flex; align-items:center; justify-content:space-between;
     }
-    .logo { font-size:1.4em; font-weight:bold; }
-    nav { display:flex; gap:16px; }
-    nav a { text-decoration:none; color:#333; font-size:1em; }
-    nav a:hover { text-decoration:underline; }
-    /* メイン */
-    main {
-      flex:1; padding:24px;
+    header.header .logo a {
+      font-size:1.4em; font-weight:bold;
+      color:#333; text-decoration:none;
     }
-    .cart-container {
-      max-width:800px; margin:0 auto 40px;
-      background:#fff; border:1px solid #ccc; border-radius:8px;
-      padding:24px; box-shadow:0 2px 6px rgba(0,0,0,0.1);
+    header.header .nav-links {
+      display:flex; align-items:center;
     }
-    h2 {
-      margin-bottom:16px; font-size:1.4em; color:#333;
-      text-align:center;
+    header.header .nav-links a {
+      padding:8px 16px; font-size:1em;
+      color:#333; text-decoration:none; white-space:nowrap;
     }
-    /* 空カート時メッセージ */
-    .empty {
-      text-align:center; padding:40px 0; color:#777; font-size:1em;
+    header.header .nav-links a:hover {
+      background:#e0e0e0;
     }
-    /* アイテムリスト */
+    /*―― メイン：カート ――*/
+    main { flex:1; padding:24px; }
+    .cart-container { max-width:800px; margin:0 auto; }
+    .cart-container h2 {
+      text-align:center; margin-bottom:16px; font-size:1.4em;
+    }
+    .back-to-list { text-align:right; margin-bottom:12px; }
+    .back-to-list a {
+      font-size:0.9em; color:#007a00; text-decoration:none;
+    }
+    .back-to-list a:hover { text-decoration:underline; }
     .cart-item {
-      display:flex; align-items:center; gap:16px; padding:12px 0;
-      border-bottom:1px solid #eee;
+      background:#fff; border:1px solid #ddd; border-radius:6px;
+      display:grid; grid-template-columns:80px 1fr 200px; gap:16px;
+      padding:16px; margin-bottom:12px;
     }
-    .cart-item:last-child { border-bottom:none; }
     .cart-item img {
-      width:80px; height:80px; object-fit:cover; border:1px solid #bbb; border-radius:4px;
+      width:80px; height:80px; object-fit:cover;
+      border:1px solid #bbb; border-radius:4px;
     }
     .item-info {
-      flex:1; display:flex; flex-direction:column; gap:6px;
+      display:flex; flex-direction:column; justify-content:space-between;
     }
     .item-info .name {
-      font-size:1em; color:#333;
-      text-decoration:none;
+      font-size:1em; color:#333; text-decoration:none;
+      margin-bottom:4px;
     }
     .item-info .price {
       font-size:0.95em; color:#2c3e50;
     }
+    /*―― 更新＋削除ボタンを横並びに ――*/
     .item-actions {
-      display:flex; flex-direction:column; gap:8px; align-items:flex-end;
-    }
-    .item-actions form {
       display:flex; align-items:center; gap:8px;
+      margin-top:8px;
     }
     .item-actions input[type="number"] {
-      width:60px; padding:4px 6px; font-size:1em;
+      width:50px; padding:4px; font-size:1em;
       border:1px solid #bbb; border-radius:4px;
     }
     .item-actions button {
-      padding:6px 12px; font-size:0.9em; background:#4a90e2; color:#fff;
-      border:none; border-radius:4px; cursor:pointer;
+      padding:4px 8px; font-size:0.9em;
+      color:#fff; border:none; border-radius:4px; cursor:pointer;
     }
-    .item-actions button:hover { background:#357ab8; }
+    .item-actions .update-btn {
+      background:#4a90e2;
+    }
+    .item-actions .update-btn:hover { background:#357ab8; }
     .item-actions .remove-btn {
       background:#d8000c;
     }
     .item-actions .remove-btn:hover { background:#b0000a; }
-    /* 合計行 */
-    .total {
-      display:flex; justify-content:flex-end; margin-top:16px; font-size:1.1em;
-      font-weight:bold;
+    .item-subtotal {
+      background:#f0f8ff; padding:12px; border-radius:6px;
+      font-size:0.95em; font-weight:bold; align-self:center;
+      text-align:right;
     }
-    /* ボタン群 */
+    /*―― 合計 ――*/
+    .cart-total {
+      background:#fff; border:2px solid #4a90e2; border-radius:6px;
+      padding:16px; margin-top:16px;
+      display:flex; justify-content:space-between; align-items:center;
+      font-size:1.1em; font-weight:bold;
+    }
     .bottom-actions {
       display:flex; justify-content:space-between; margin-top:24px;
     }
-    .bottom-actions a,
-    .bottom-actions button {
-      padding:10px 20px; font-size:1em; text-decoration:none; border:none;
-      border-radius:4px; cursor:pointer;
+    .bottom-actions a {
+      padding:10px 20px; font-size:1em; text-decoration:none;
+      border:1px solid #333; border-radius:4px; background:#fff;
+      color:#333; cursor:pointer;
     }
-    .continue {
-      background:#fff; border:1px solid #333; color:#333;
+    .bottom-actions a:hover { background:#f0f0f0; }
+    .bottom-actions .checkout {
+      background:#27ae60; color:#fff; border:none;
     }
-    .continue:hover { background:#f0f0f0; }
-    .checkout {
-      background:#27ae60; color:#fff;
+    .bottom-actions .checkout:hover { background:#1e874b; }
+    /*―― 統一フッター ――*/
+    footer.footer {
+      background:#cccccc; text-align:center;
+      padding:12px 0; margin-top:auto;
+      font-size:0.85em; color:#555;
     }
-    .checkout:hover { background:#1e874b; }
-    /* フッター */
-    footer {
-      background:#ddd; text-align:center;
-      padding:12px 0; margin-top:auto; font-size:0.9em;
+    footer.footer .footer-links {
+      display:flex; justify-content:center; gap:24px;
     }
-    .footer-links a {
-      margin:0 12px; text-decoration:none; color:#333;
+    footer.footer .footer-links a {
+      text-decoration:none; color:#333;
     }
-    .footer-links a:hover { text-decoration:underline; }
+    footer.footer .footer-links a:hover {
+      text-decoration:underline;
+    }
   </style>
 </head>
 <body>
 
   <!-- ヘッダー -->
-  <header>
-    <div class="logo"><a th:href="@{/}" style="text-decoration:none;color:#333;">ECサイトロゴ</a></div>
-    <nav>
+  <header class="header">
+    <div class="logo">
+      <a th:href="@{/}">Y&I Group</a>
+    </div>
+    <nav class="nav-links">
       <sec:authorize access="!isAuthenticated()">
         <a th:href="@{/login}">ログイン</a>
         <a th:href="@{/register}">会員登録</a>
+        <a th:href="@{/cart}">🛒</a>
       </sec:authorize>
       <sec:authorize access="isAuthenticated()">
         <a th:href="@{/mypage}">マイページ</a>
+        <a th:href="@{/logout}">ログアウト</a>
+        <a th:href="@{/cart}">🛒</a>
       </sec:authorize>
-      <a th:href="@{/cart}">🛒 カート</a>
     </nav>
   </header>
 
-  <!-- カートコンテンツ -->
+  <!-- カート内容 -->
   <main>
     <div class="cart-container">
       <h2>カート</h2>
+
+      <!-- 一覧へ戻る -->
+      <div class="back-to-list">
+        <a th:href="@{/}">商品一覧へ戻る</a>
+      </div>
 
       <!-- 空カート -->
       <div th:if="${#lists.isEmpty(cart.items)}" class="empty">
         カートに商品がありません。
       </div>
 
-      <!-- 商品リスト -->
+      <!-- 各アイテム -->
       <div th:each="item : ${cart.items}" class="cart-item">
         <img th:src="@{${item.product.imageUrl}}" alt="商品画像"/>
+
         <div class="item-info">
-          <a th:href="@{|/products/${item.product.id}|}" class="name" th:text="${item.product.name}">商品名</a>
-          <div class="price">¥<span th:text="${#numbers.formatInteger(item.product.price,'#,###')}">0</span>（税込）</div>
-        </div>
-        <div class="item-actions">
-          <!-- 数量更新 -->
-          <form th:action="@{|/cart/update/${item.product.id}|}" method="post">
-            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-            <input type="number" name="quantity"
-                   th:value="${item.quantity}"
-                   min="0" th:max="${item.product.stock}" />
-            <button type="submit">更新</button>
-          </form>
-          <!-- 削除 -->
-          <form th:action="@{|/cart/remove/${item.product.id}|}" method="post" style="margin:0;">
-            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-            <button type="submit" class="remove-btn">削除</button>
-          </form>
-          <!-- 小計 -->
+          <a th:href="@{|/products/${item.product.id}|}" class="name"
+             th:text="${item.product.name}">商品名</a>
           <div class="price">
-            小計：¥<span th:text="${#numbers.formatInteger(item.subtotal,'#,###')}">0</span>
+            ¥<span th:text="${#numbers.formatInteger(item.product.price,'#,###')}">0</span>（税込）
           </div>
+          <div class="item-actions">
+            <!-- 数量更新 -->
+            <form th:action="@{|/cart/update/${item.product.id}|}" method="post" style="display:inline;">
+              <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+              <input type="number" name="quantity"
+                     th:value="${item.quantity}"
+                     min="0" th:max="${item.product.stock}"/>
+              <button type="submit" class="update-btn">更新</button>
+            </form>
+            <!-- 削除 -->
+            <form th:action="@{|/cart/remove/${item.product.id}|}" method="post" style="display:inline;">
+              <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+              <button type="submit" class="remove-btn">削除</button>
+            </form>
+          </div>
+        </div>
+
+        <div class="item-subtotal">
+          小計：¥<span th:text="${#numbers.formatInteger(item.subtotal,'#,###')}">0</span>
         </div>
       </div>
 
-      <!-- 合計金額 -->
-      <div th:if="${!#lists.isEmpty(cart.items)}" class="total">
-        合計金額（税込）： ¥<span th:text="${#numbers.formatInteger(cart.total,'#,###')}">0</span>
+      <!-- 合計 -->
+      <div th:if="${!#lists.isEmpty(cart.items)}" class="cart-total">
+        <div>合計金額（税込）</div>
+        <div>¥<span th:text="${#numbers.formatInteger(cart.total,'#,###')}">0</span></div>
       </div>
 
       <!-- 下部ボタン群 -->
       <div th:if="${!#lists.isEmpty(cart.items)}" class="bottom-actions">
-        <a th:href="@{/}" class="continue">買い物を続ける</a>
+        <a th:href="@{/}">買い物を続ける</a>
         <a th:href="@{/checkout}" class="checkout">注文手続きへ進む</a>
       </div>
     </div>
   </main>
 
   <!-- フッター -->
-  <footer>
+  <footer class="footer">
     <div class="footer-links">
       <a th:href="@{/terms}">利用規約</a>
       <a th:href="@{/contact}">お問い合わせ</a>

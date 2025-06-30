@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+  <meta charset="UTF-8"/>
+  <title th:text="${product.name} + ' | ECサイト'">商品詳細 | ECサイト</title>
+  <style>
+    /*―― 共通：リセット＆ベース設定 ――*/
+    * { margin:0; padding:0; box-sizing:border-box; }
+    html, body { height:100%; }
+    body {
+      font-family:'Meiryo','Segoe UI',sans-serif;
+      display:flex; flex-direction:column;
+      min-height:100vh; background:#f5f5f5; color:#333;
+    }
+
+    /*―― 統一ヘッダー ――*/
+    header.header {
+      background:#cccccc;
+      padding:16px 24px;
+      display:flex; align-items:center; justify-content:space-between;
+    }
+    header.header .logo a {
+      font-size:1.4em; font-weight:bold;
+      color:#333; text-decoration:none;
+    }
+    header.header .nav-links {
+      display:flex; align-items:center;
+    }
+    header.header .nav-links a {
+      padding:8px 16px; font-size:1em;
+      color:#333; text-decoration:none; white-space:nowrap;
+    }
+    header.header .nav-links a:hover {
+      background:#e0e0e0;
+    }
+
+    /*―― メイン：商品詳細 ――*/
+    main {
+      flex:1; padding:24px; display:flex; justify-content:center;
+    }
+    .detail-container {
+      background:#fff; border:1px solid #ccc; border-radius:8px;
+      padding:24px; max-width:900px; width:100%;
+      display:grid; grid-template-columns:1fr 1fr; gap:24px;
+      box-shadow:0 2px 8px rgba(0,0,0,0.1);
+    }
+    .images {
+      display:flex; flex-direction:column; gap:8px;
+    }
+    .images img {
+      width:100%; border:1px solid #bbb; border-radius:4px;
+      object-fit:cover;
+    }
+    .thumbnails {
+      display:flex; gap:8px;
+    }
+    .thumbnails img {
+      width:60px; height:60px;
+      object-fit:cover; cursor:pointer;
+      border:1px solid #ccc; border-radius:4px;
+    }
+    .info {
+      display:flex; flex-direction:column; justify-content:space-between;
+    }
+    .info h2 {
+      font-size:1.5em; margin-bottom:12px; color:#333;
+    }
+    .price {
+      font-size:1.3em; font-weight:bold;
+      margin-bottom:12px; color:#2c3e50;
+    }
+    .description {
+      font-size:1em; margin-bottom:16px; line-height:1.4;
+    }
+    .stock {
+      font-size:1em; margin-bottom:16px;
+    }
+    .stock.out { color:#d8000c; }
+
+    .actions {
+      margin-top:16px;
+    }
+    .actions form {
+      display:flex; align-items:center; gap:12px;
+    }
+    .actions input[type="number"] {
+      width:60px; padding:6px; font-size:1em;
+      border:1px solid #bbb; border-radius:4px;
+    }
+    .actions button {
+      padding:8px 16px; font-size:1em;
+      background:#27ae60; color:#fff;
+      border:none; border-radius:4px; cursor:pointer;
+    }
+    .actions button:hover { background:#1e874b; }
+    .actions button:disabled {
+      background:#ccc; cursor:not-allowed;
+    }
+
+    .back-link {
+      grid-column:1/-1; text-align:center; margin-top:24px;
+    }
+    .back-link a {
+      text-decoration:none; color:#333;
+      border:1px solid #333; padding:8px 16px;
+      border-radius:4px; font-size:1em;
+    }
+    .back-link a:hover { background:#f0f0f0; }
+
+    /*―― 統一フッター ――*/
+    footer.footer {
+      background:#cccccc; text-align:center;
+      padding:12px 0; font-size:0.85em; color:#555;
+      margin-top:auto;
+    }
+    footer.footer .footer-links {
+      display:flex; justify-content:center; gap:24px;
+    }
+    footer.footer .footer-links a {
+      text-decoration:none; color:#333;
+    }
+    footer.footer .footer-links a:hover {
+      text-decoration:underline;
+    }
+  </style>
+  <script th:inline="javascript">
+    /* サムネイルクリックでメイン画像切り替え */
+    function swap(src) {
+      document.getElementById('mainImage').src = src;
+    }
+  </script>
+</head>
+<body>
+
+  <!-- ヘッダー -->
+  <header class="header">
+    <div class="logo">
+      <a th:href="@{/}">Y&I Group</a>
+    </div>
+    <nav class="nav-links">
+      <sec:authorize access="!isAuthenticated()">
+        <a th:href="@{/login}">ログイン</a>
+        <a th:href="@{/register}">会員登録</a>
+        <a th:href="@{/cart}">🛒</a>
+      </sec:authorize>
+      <sec:authorize access="isAuthenticated()">
+        <a th:href="@{/mypage}">マイページ</a>
+        <a th:href="@{/logout}">ログアウト</a>
+        <a th:href="@{/cart}">🛒</a>
+      </sec:authorize>
+    </nav>
+  </header>
+
+  <!-- 商品詳細 -->
+  <main>
+    <div class="detail-container">
+
+      <!-- 画像ギャラリー -->
+      <div class="images">
+        <img id="mainImage" th:src="@{${product.imageUrls[0]}}" alt="メイン画像"/>
+        <div class="thumbnails">
+          <img th:each="url : ${product.imageUrls}"
+               th:src="@{${url}}"
+               th:onclick="'swap(' + '\'' + @{${url}} + '\'' + ')'"
+               alt="サムネイル"/>
+        </div>
+      </div>
+
+      <!-- 商品情報＆アクション -->
+      <div class="info">
+        <div>
+          <h2 th:text="${product.name}">商品名</h2>
+          <div class="price">
+            ¥<span th:text="${#numbers.formatInteger(product.price,'#,###')}">0</span>（税込）
+          </div>
+          <div class="description" th:text="${product.description}">
+            商品説明が入ります。
+          </div>
+          <div class="stock">
+            <span th:if="${product.stock > 0}">
+              在庫数：<span th:text="${product.stock}">0</span>
+            </span>
+            <span th:if="${product.stock == 0}">
+              在庫なし
+            </span>
+          </div>
+        </div>
+
+        <div class="actions">
+          <form th:action="@{/cart/add/{id}(id=${product.id})}" method="post">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+            <input type="number"
+                   name="quantity"
+                   value="1"
+                   min="1"
+                   th:max="${product.stock}"
+                   th:disabled="${product.stock == 0}"/>
+            <button type="submit"
+                    th:disabled="${product.stock == 0}">
+              カートに入れる
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- 一覧へ戻る -->
+      <div class="back-link">
+        <a th:href="@{/}">一覧へ戻る</a>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- フッター -->
+  <footer class="footer">
+    <div class="footer-links">
+      <a th:href="@{/terms}">利用規約</a>
+      <a th:href="@{/contact}">お問い合わせ</a>
+    </div>
+  </footer>
+
+</body>
+</html>
